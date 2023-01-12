@@ -157,7 +157,7 @@ export function ApiDefinitionDialog({
           <TabPanel value={activeTab} index={index}>
             <PlainApiDefinitionWidget
               definition={entity.spec.definition}
-              language={definitionWidget.rawLanguage || entity.spec.type}
+              language={definitionWidget?.rawLanguage || entity.spec.type}
             />
           </TabPanel>
         </div>
