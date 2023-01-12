@@ -27,7 +27,6 @@ import { useApi } from '@backstage/core-plugin-api';
 /** @public */
 export const ApiDefinitionCard = () => {
   const { entity } = useEntity<ApiEntity>();
-
   const config = useApi(apiDocsConfigRef);
   const { getApiDefinitionWidget } = config;
 
