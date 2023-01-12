@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { ApiDefinitionDialog } from './ApiDefinitionDialog';
+export { ApiDefinitionDialog } from './ApiDefinitionDialog2';

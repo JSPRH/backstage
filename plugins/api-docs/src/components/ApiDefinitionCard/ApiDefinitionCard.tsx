@@ -25,7 +25,9 @@ import { CardTab, TabbedCard } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 
 /** @public */
-export const ApiDefinitionCardContent = ({ entity }: { entity: ApiEntity }) => {
+export const ApiDefinitionCard = () => {
+  const { entity } = useEntity<ApiEntity>();
+
   const config = useApi(apiDocsConfigRef);
   const { getApiDefinitionWidget } = config;
 
@@ -66,11 +68,4 @@ export const ApiDefinitionCardContent = ({ entity }: { entity: ApiEntity }) => {
       ]}
     />
   );
-};
-
-/** @public */
-export const ApiDefinitionCard = () => {
-  const { entity } = useEntity<ApiEntity>();
-
-  return <ApiDefinitionCardContent entity={entity} />;
 };

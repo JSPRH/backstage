@@ -23,34 +23,32 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  makeStyles,
   Tab,
   Tabs,
 } from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
 import React, { useEffect } from 'react';
 import { apiDocsConfigRef } from '../../config';
 import { PlainApiDefinitionWidget } from '../PlainApiDefinitionWidget';
 
-const useStyles = makeStyles(theme => ({
-  fullHeightDialog: {
-    height: 'calc(100% - 64px)',
-  },
-  root: {
-    display: 'flex',
-    flexGrow: 1,
-    width: '100%',
-    backgroundColor: theme.palette.background.paper,
-  },
-  tabs: {
-    borderRight: `1px solid ${theme.palette.divider}`,
-    flexShrink: 0,
-  },
-  tabContents: {
-    flexGrow: 1,
-    overflowX: 'auto',
-  },
-}));
+const useDialogStyles = makeStyles(theme =>
+  createStyles({
+    fullHeightDialog: {
+      height: 'calc(100% - 64px)',
+    },
+    content: {
+      width: '100%',
+      backgroundColor: theme.palette.background.default,
+    },
+    tabs: {
+      borderBottom: `1px solid ${theme.palette.divider}`,
+    },
+    tabContents: {
+      overflowX: 'auto',
+    },
+  }),
+);
 
 function TabPanel(props: {
   children?: React.ReactNode;
@@ -58,13 +56,13 @@ function TabPanel(props: {
   value: number;
 }) {
   const { children, value, index, ...other } = props;
-  const classes = useStyles();
+  const classes = useDialogStyles();
   return (
     <div
       role="tabpanel"
       hidden={value !== index}
-      id={`vertical-tabpanel-${index}`}
-      aria-labelledby={`vertical-tab-${index}`}
+      id={`horizontal-tabpanel-${index}`}
+      aria-labelledby={`horizontal-tab-${index}`}
       className={classes.tabContents}
       {...other}
     >
@@ -79,26 +77,22 @@ function TabPanel(props: {
 
 function a11yProps(index: number) {
   return {
-    id: `vertical-tab-${index}`,
-    'aria-controls': `vertical-tabpanel-${index}`,
+    id: `tab-${index}`,
+    'aria-controls': `tabpanel-${index}`,
   };
 }
 
-/**
- * A dialog that lets users inspect the API definition.
- *
- * @public
- */
-export function ApiDefinitionDialog({
+export const ApiDefinitionDialog = ({
   open,
-  entity,
   onClose,
+  entity,
 }: {
   open: boolean;
-  entity: ApiEntity;
   onClose: () => void;
-}) {
-  const classes = useStyles();
+  entity: ApiEntity;
+}) => {
+  const classes = useDialogStyles();
+
   const [activeTab, setActiveTab] = React.useState(0);
 
   useEffect(() => {
@@ -123,45 +117,45 @@ export function ApiDefinitionDialog({
       maxWidth="xl"
       open={open}
       onClose={onClose}
-      aria-labelledby="api-definition-dialog-title"
+      aria-labelledby="api-entity-definition-dialog-title"
       PaperProps={{ className: classes.fullHeightDialog }}
     >
-      <DialogTitle id="api-definition-dialog-title">
+      <DialogTitle id="api-entity-definition-dialog-title">
         {entityTitle} API Definition
       </DialogTitle>
-      <DialogContent dividers>
-        <div className={classes.root}>
-          <Tabs
-            orientation="vertical"
-            variant="scrollable"
-            value={activeTab}
-            onChange={(_, newValue) => setActiveTab(newValue)}
-            aria-label="Inspector options"
-            className={classes.tabs}
-          >
-            {definitionWidget ? (
-              <Tab label={definitionWidget.title} {...a11yProps(index++)} />
-            ) : (
-              ''
-            )}
-            <Tab label="Raw" {...a11yProps(index)} />
-          </Tabs>
 
+      <DialogContent dividers>
+        <Tabs
+          orientation="horizontal"
+          variant="scrollable"
+          value={activeTab}
+          onChange={(_, newValue) => setActiveTab(newValue)}
+          aria-label="API entity definition options"
+          className={classes.tabs}
+        >
           {definitionWidget ? (
-            <TabPanel value={activeTab} index={0}>
-              {definitionWidget.component(entity.spec.definition)}
-            </TabPanel>
+            <Tab label={definitionWidget.title} {...a11yProps(index++)} />
           ) : (
             ''
           )}
-          <TabPanel value={activeTab} index={index}>
-            <PlainApiDefinitionWidget
-              definition={entity.spec.definition}
-              language={definitionWidget.rawLanguage || entity.spec.type}
-            />
+          <Tab label="Raw" {...a11yProps(index)} />
+        </Tabs>
+
+        {definitionWidget ? (
+          <TabPanel value={activeTab} index={0}>
+            {definitionWidget.component(entity.spec.definition)}
           </TabPanel>
-        </div>
+        ) : (
+          ''
+        )}
+        <TabPanel value={activeTab} index={index}>
+          <PlainApiDefinitionWidget
+            definition={entity.spec.definition}
+            language={definitionWidget?.rawLanguage || entity.spec.type}
+          />
+        </TabPanel>
       </DialogContent>
+
       <DialogActions>
         <Button onClick={onClose} color="primary">
           Close
@@ -169,4 +163,4 @@ export function ApiDefinitionDialog({
       </DialogActions>
     </Dialog>
   );
-}
+};
