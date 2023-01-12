@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-import { ApiEntity } from '@backstage/catalog-model';
+import { ApiEntity, Entity } from '@backstage/catalog-model';
 import { EntityTable } from '@backstage/plugin-catalog-react';
-import React from 'react';
+import React, { useState } from 'react';
 import { ApiTypeTitle } from '../ApiDefinitionCard';
+import { ApiDefinitionDialog } from '../ApiDefinitionDialog';
 import { TableColumn } from '@backstage/core-components';
+import { ToggleButton } from '@material-ui/lab';
+import ExtensionIcon from '@material-ui/icons/Extension';
 
 export function createSpecApiTypeColumn(): TableColumn<ApiEntity> {
   return {
@@ -28,9 +31,34 @@ export function createSpecApiTypeColumn(): TableColumn<ApiEntity> {
   };
 }
 
-// TODO: This could be moved to plugin-catalog-react if we wouldn't have a
-// special createSpecApiTypeColumn. But this is required to use ApiTypeTitle to
-// resolve the display name of an entity. Is the display name really worth it?
+function createApiDefinitionColumn<T extends Entity>(): TableColumn<T> {
+  const ApiDefinitionButton = ({ entity }: any) => {
+    const [dialogOpen, setDialogOpen] = useState(false);
+
+    return (
+      <>
+        <ToggleButton onClick={() => setDialogOpen(!dialogOpen)}>
+          <ExtensionIcon />
+        </ToggleButton>
+        <ApiDefinitionDialog
+          entity={entity}
+          open={dialogOpen}
+          onClose={() => setDialogOpen(false)}
+        />
+      </>
+    );
+  };
+
+  return {
+    title: 'API Definition',
+    render: entity => <ApiDefinitionButton entity={entity} />,
+  };
+}
+
+// TODO: This could be moved to plugin-catalog-react if we wouldn't have the
+// special createSpecApiTypeColumn and createApiDefinitionColumn. But this is
+// required to use ApiTypeTitle to resolve the display name of an entity and
+// offer the API definition quick look button. Is it really worth it?
 
 export const apiEntityColumns: TableColumn<ApiEntity>[] = [
   EntityTable.columns.createEntityRefColumn({ defaultKind: 'API' }),
@@ -39,4 +67,5 @@ export const apiEntityColumns: TableColumn<ApiEntity>[] = [
   createSpecApiTypeColumn(),
   EntityTable.columns.createSpecLifecycleColumn(),
   EntityTable.columns.createMetadataDescriptionColumn(),
+  createApiDefinitionColumn(),
 ];

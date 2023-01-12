@@ -14,10 +14,4 @@
  * limitations under the License.
  */
 
-export {
-  ApiDefinitionCard,
-  ApiDefinitionCardContent,
-} from './ApiDefinitionCard';
-export { defaultDefinitionWidgets } from './ApiDefinitionWidget';
-export type { ApiDefinitionWidget } from './ApiDefinitionWidget';
-export { ApiTypeTitle } from './ApiTypeTitle';
+export { ApiDefinitionDialog } from './ApiDefinitionDialog';
